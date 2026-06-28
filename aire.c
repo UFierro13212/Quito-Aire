@@ -1,58 +1,45 @@
-void ingresarDatos(Zona zonas[]) {
+void mostrarResultados(Zona zonas[]) {
     int i;
 
+    printf("\n========== REPORTE QUITOAIRE ==========\n");
+
     for (i = 0; i < ZONAS; i++) {
-        printf("\n--- Zona %d ---\n", i + 1);
-
-        printf("Nombre de la zona: ");
-        fgets(zonas[i].nombre, 30, stdin);
-        zonas[i].nombre[strcspn(zonas[i].nombre, "\n")] = '\0';
-
-        printf("PM2.5: ");
-        scanf("%f", &zonas[i].pm25);
-
-        printf("CO2: ");
-        scanf("%f", &zonas[i].co2);
-
-        printf("Temperatura: ");
-        scanf("%f", &zonas[i].temperatura);
-
-        printf("Humedad: ");
-        scanf("%f", &zonas[i].humedad);
-
-        printf("Velocidad del viento: ");
-        scanf("%f", &zonas[i].viento);
-
-        limpiarBuffer();
+        printf("\nZona: %s\n", zonas[i].nombre);
+        printf("PM2.5: %.2f\n", zonas[i].pm25);
+        printf("CO2: %.2f\n", zonas[i].co2);
+        printf("Temperatura: %.2f\n", zonas[i].temperatura);
+        printf("Humedad: %.2f\n", zonas[i].humedad);
+        printf("Viento: %.2f\n", zonas[i].viento);
+        printf("Prediccion 24h: %.2f\n", zonas[i].prediccion);
+        printf("Alerta: %s\n", zonas[i].alerta);
+        printf("Medida: %s\n", zonas[i].medida);
     }
 }
 
-void calcularPrediccion(Zona zonas[]) {
+void guardarArchivo(Zona zonas[]) {
+    FILE *archivo;
     int i;
 
-    for (i = 0; i < ZONAS; i++) {
-        zonas[i].prediccion =
-            (zonas[i].pm25 * 0.45) +
-            (zonas[i].co2 * 0.25) +
-            (zonas[i].humedad * 0.10) +
-            (zonas[i].temperatura * 0.10) -
-            (zonas[i].viento * 0.10);
-    }
-}
+    archivo = fopen("reporte_quitoaire.txt", "w");
 
-void generarAlertas(Zona zonas[]) {
-    int i;
+    if (archivo == NULL) {
+        printf("Error al crear el archivo.\n");
+        return;
+    }
+
+    fprintf(archivo, "========== REPORTE QUITOAIRE ==========\n");
 
     for (i = 0; i < ZONAS; i++) {
-        if (zonas[i].prediccion < 50) {
-            strcpy(zonas[i].alerta, "BAJA");
-            strcpy(zonas[i].medida, "Calidad del aire aceptable.");
-        } else if (zonas[i].prediccion < 100) {
-            strcpy(zonas[i].alerta, "MEDIA");
-            strcpy(zonas[i].medida, "Evitar actividad fisica intensa al aire libre.");
-        } else {
-            strcpy(zonas[i].alerta, "ALTA");
-            strcpy(zonas[i].medida, "Reducir trafico y evitar exposicion prolongada.");
-        }
+        fprintf(archivo, "\nZona: %s\n", zonas[i].nombre);
+        fprintf(archivo, "PM2.5: %.2f\n", zonas[i].pm25);
+        fprintf(archivo, "CO2: %.2f\n", zonas[i].co2);
+        fprintf(archivo, "Temperatura: %.2f\n", zonas[i].temperatura);
+        fprintf(archivo, "Humedad: %.2f\n", zonas[i].humedad);
+        fprintf(archivo, "Viento: %.2f\n", zonas[i].viento);
+        fprintf(archivo, "Prediccion 24h: %.2f\n", zonas[i].prediccion);
+        fprintf(archivo, "Alerta: %s\n", zonas[i].alerta);
+        fprintf(archivo, "Medida: %s\n", zonas[i].medida);
     }
+
+    fclose(archivo);
 }
